@@ -1,16 +1,14 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require File.join(File.dirname(__FILE__), '..', 'test_helper')
 
-
-class GoogleWeatherTest < ActionMailer::TestCase
+class GoogleWeatherTest < Test::Unit::TestCase
 
   TEST_CACHE_FILE_NAME = RAILS_ROOT+"/google_weather_test_cache.xml"
   TEST_RETRY_MARKER = RAILS_ROOT+"/google_weather_test_api_retry.txt"
 
-
   def setup
     ActionMailer::Base.deliveries.clear
-    GoogleWeather.redefine_const(:RETRY_MARKER, TEST_RETRY_MARKER)
-    GoogleWeather.any_instance.stubs(:cache_filename => TEST_CACHE_FILE_NAME)
+    Regentanz::GoogleWeather.redefine_const(:RETRY_MARKER, TEST_RETRY_MARKER)
+    Regentanz::GoogleWeather.any_instance.stubs(:cache_filename => TEST_CACHE_FILE_NAME)
   end
 
   def teardown
@@ -18,43 +16,45 @@ class GoogleWeatherTest < ActionMailer::TestCase
     File.unlink(TEST_RETRY_MARKER) if File.exists?(TEST_RETRY_MARKER)
   end
 
-  test "should create marker file and send email if invalid xml file has been found" do
+  def test_truth
+    assert true
+  end
+
+  def test_should_create_marker_file_and_send_email_if_invalid_xml_file_has_been_found
     stub_valid_xml_api_response!
 
-    weather = GoogleWeather.new("Berlin", weather_options)
-    assert !File.exists?(GoogleWeather::RETRY_MARKER)
+    weather = Regentanz::GoogleWeather.new("Berlin", weather_options)
+    assert !File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
 
     assert_emails 1 do
       weather.get_weather!
-      assert File.exists?(GoogleWeather::RETRY_MARKER)
+      assert File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
     end
-    assert_equal ["c.zimmermann@kaupertmedia.de"], ActionMailer::Base.deliveries.first.to
   end
 
-  test "should send email after marker file was deleted" do
+  def test_should_send_email_after_marker_file_was_deleted
     File.new(TEST_RETRY_MARKER, "w+").close
-    GoogleWeather.redefine_const(:RETRY_TTL, 0); sleep 0.2
+    Regentanz::GoogleWeather.redefine_const(:RETRY_TTL, 0); sleep 0.2
     stub_valid_xml_api_response!
 
-    weather = GoogleWeather.new("Berlin", weather_options)
-    assert File.exists?(GoogleWeather::RETRY_MARKER)
+    weather = Regentanz::GoogleWeather.new("Berlin", weather_options)
+    assert File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
 
     assert_emails 1 do
       weather.get_weather!
-      assert !File.exists?(GoogleWeather::RETRY_MARKER)
+      assert !File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
     end
-    assert_equal ["c.zimmermann@kaupertmedia.de"], ActionMailer::Base.deliveries.last.to
   end
 
-  test "should accept :lang as option" do
-    weather = GoogleWeather.new("Berlin",weather_options(:lang => :es) )
+  def test_should_accept_lang_option
+    weather = Regentanz::GoogleWeather.new("Berlin",weather_options(:lang => :es) )
     assert_equal "es", weather.lang
   end
 
-  test "should calculate sunrise and sunset based on geodata" do
-    weather = GoogleWeather.new("Berlin", weather_options(:geo_location => nil) )
+  def test_should_calculate_sunrise_and_sunset_based_on_geodata
+    weather = Regentanz::GoogleWeather.new("Berlin", weather_options(:geo_location => nil) )
     assert weather.respond_to? :sunrise
     assert weather.respond_to? :sunset
     assert_nil weather.sunrise
@@ -63,7 +63,7 @@ class GoogleWeatherTest < ActionMailer::TestCase
     lat = 52.5163253260716
     lng = 13.3780860900879
 
-    weather = GoogleWeather.new("Berlin", weather_options(:geodata => {:lat => lat, :lng => lng}) )
+    weather = Regentanz::GoogleWeather.new("Berlin", weather_options(:geodata => {:lat => lat, :lng => lng}) )
     assert weather.sunrise.is_a? Time
     assert weather.sunset.is_a? Time
   end
