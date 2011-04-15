@@ -39,9 +39,9 @@ module Regentanz
       @current ||= OpenStruct.new(@current_raw)
     end
 
-    # Returns the full path to the cache file based upon Regentanz::Configuration#cache_path and _cache_id_
+    # Returns the full path to the cache file based upon Regentanz::Configuration#cache_dir and _cache_id_
     def cache_filename
-      @cache_filename ||= "#{Regentanz.configuration.cache_path}#{@cache_id}.xml"
+      @cache_filename ||= File.join(Regentanz.configuration.cache_dir, "#{Regentanz.configuration.cache_prefix}_#{@cache_id}.xml")
     end
 
     # Returns an array of OpenStruct objects with attributes corresponding to the

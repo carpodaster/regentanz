@@ -2,19 +2,13 @@ require File.join(File.dirname(__FILE__), '..', 'test_helper')
 
 class GoogleWeatherTest < ActiveSupport::TestCase
 
-  TEST_CACHE_FILE_NAME = RAILS_ROOT+"/google_weather_test_cache.xml"
-  TEST_RETRY_MARKER = RAILS_ROOT+"/test.txt"
+  TEST_CACHE_FILE_NAME = File.join(Regentanz.configuration.cache_dir, "regentanz_test_cache.xml")
 
   def setup
+    # FIXME Remove ActionMailer
     ActionMailer::Base.deliveries.clear
-    Regentanz::GoogleWeather.any_instance.stubs(:cache_filename => TEST_CACHE_FILE_NAME)
-		# We're in test mode here
-		Regentanz.configure do |config|
-			config.do_not_get_weather = true
-			config.suppress_stderr_output = true
-			config.cache_path = File.join RAILS_ROOT, "tmp", "/"
-			config.retry_marker = TEST_RETRY_MARKER
-		end
+		# Ensure test mode
+		Regentanz.configure { |config| config.do_not_get_weather = true }
   end
 
   def teardown
@@ -52,7 +46,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
   end
 
   def test_should_send_email_after_marker_file_was_deleted
-    File.new(TEST_RETRY_MARKER, "w+").close
+    File.new(Regentanz.configuration.retry_marker, "w+").close
     Regentanz.configuration.expects(:retry_ttl).returns(0); sleep 0.2
     stub_valid_xml_api_response!
     Regentanz::GoogleWeather.any_instance.expects(:after_api_failure_resumed) # callback
@@ -85,6 +79,11 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     weather = Regentanz::GoogleWeather.new("Berlin", weather_options(:geodata => {:lat => lat, :lng => lng}) )
     assert weather.sunrise.is_a? Time
     assert weather.sunset.is_a? Time
+  end
+
+  test "should return cache filename" do
+    obj  = Factory(:google_weather, :cache_id => "foo")
+    assert_equal File.join(Regentanz.configuration.cache_dir, "#{Regentanz.configuration.cache_prefix}_foo.xml"), obj.cache_filename
   end
 
   protected

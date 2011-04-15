@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), '..', 'test_helper')
+require "tmpdir"
 
 class ConfigurationTest < ActiveSupport::TestCase
 
@@ -17,7 +18,8 @@ class ConfigurationTest < ActiveSupport::TestCase
   test "should have configuration" do
     configuration_options = [
       :base_url,
-      :cache_path,
+      :cache_dir,
+      :cache_prefix,
       :cache_ttl,
       :retry_marker,
       :retry_ttl,
@@ -42,11 +44,13 @@ class ConfigurationTest < ActiveSupport::TestCase
 
   test "instance should have sane defaults" do
     obj = Regentanz::Configuration.new
+    tmpdir = Dir.tmpdir
     assert_equal "http://www.google.com/ig/api",               obj.base_url
-    assert_equal "#{RAILS_ROOT}/public/cache/google_weather_", obj.cache_path
+    assert_equal "#{tmpdir}",                                  obj.cache_dir
+    assert_equal "regentanz",                                  obj.cache_prefix
     assert_equal 14400,                                        obj.cache_ttl
     assert_equal 3600,                                         obj.retry_ttl
-    assert_equal "#{RAILS_ROOT}/public/cache/google_weather_api_retry.txt", obj.retry_marker
+    assert_equal "#{tmpdir}/regentanz_api_retry.txt",          obj.retry_marker
   end
 
 end

@@ -1,6 +1,7 @@
 == CHANGELOG
 
-=== v0.0.4 // 2011-04-15
+=== v0.0.5 // 2011-04-15
+* Removed RAILS_ROOT
 * Moved constants into class-wide configuration
 * Callback-stubs
 
