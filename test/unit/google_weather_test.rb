@@ -16,10 +16,6 @@ class GoogleWeatherTest < Test::Unit::TestCase
     File.unlink(TEST_RETRY_MARKER) if File.exists?(TEST_RETRY_MARKER)
   end
 
-  def test_truth
-    assert true
-  end
-
   def test_should_create_marker_file_and_send_email_if_invalid_xml_file_has_been_found
     stub_valid_xml_api_response!
 
