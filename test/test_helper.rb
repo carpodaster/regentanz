@@ -6,12 +6,9 @@ RAILS_ROOT = File.expand_path(File.join(File.dirname(__FILE__), 'support'))
 
 puts "Fake Rails.root is `#{RAILS_ROOT}`"
 
-Bundler.require(:default, :development)
-
-# FIXME this should be loaded via bundler?
-require 'action_mailer'
+require "test/unit"
 require 'action_mailer/test_helper'
-require 'mocha'
+Bundler.require(:default, :development)
 
 # FIXME move SupportMailer into proper configurable callbacks
 require File.join(File.dirname(__FILE__), 'support', 'support_mailer')

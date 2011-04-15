@@ -18,7 +18,8 @@ class GoogleWeatherTest < Test::Unit::TestCase
 
   def test_should_create_marker_file_and_send_email_if_invalid_xml_file_has_been_found
     stub_valid_xml_api_response!
-
+    Regentanz::GoogleWeather.any_instance.expects(:after_api_failure_detected) # callback
+    
     weather = Regentanz::GoogleWeather.new("Berlin", weather_options)
     assert !File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
@@ -33,6 +34,7 @@ class GoogleWeatherTest < Test::Unit::TestCase
     File.new(TEST_RETRY_MARKER, "w+").close
     Regentanz::GoogleWeather.redefine_const(:RETRY_TTL, 0); sleep 0.2
     stub_valid_xml_api_response!
+    Regentanz::GoogleWeather.any_instance.expects(:after_api_failure_resumed) # callback
 
     weather = Regentanz::GoogleWeather.new("Berlin", weather_options)
     assert File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)

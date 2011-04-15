@@ -1,2 +1,6 @@
+require 'active_support'
+require 'actionmailer'
 require 'regentanz/version'
+require 'regentanz/callbacks'
+require 'regentanz/astronomy'
 require 'regentanz/google_weather'
