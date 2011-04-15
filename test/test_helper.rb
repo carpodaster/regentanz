@@ -7,8 +7,10 @@ RAILS_ROOT = File.expand_path(File.join(File.dirname(__FILE__), 'support'))
 puts "Fake Rails.root is `#{RAILS_ROOT}`"
 
 require "test/unit"
+require "active_support/test_case"
 require 'action_mailer/test_helper'
 Bundler.require(:default, :development)
+require 'test/factories'
 
 # FIXME move SupportMailer into proper configurable callbacks
 require File.join(File.dirname(__FILE__), 'support', 'support_mailer')
@@ -21,3 +23,4 @@ class Module #:nodoc:
     const_set(name, value)
   end
 end
+

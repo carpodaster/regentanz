@@ -1,53 +1,74 @@
 require File.join(File.dirname(__FILE__), '..', 'test_helper')
 
-class GoogleWeatherTest < Test::Unit::TestCase
+class GoogleWeatherTest < ActiveSupport::TestCase
 
   TEST_CACHE_FILE_NAME = RAILS_ROOT+"/google_weather_test_cache.xml"
-  TEST_RETRY_MARKER = RAILS_ROOT+"/google_weather_test_api_retry.txt"
+  TEST_RETRY_MARKER = RAILS_ROOT+"/test.txt"
 
   def setup
     ActionMailer::Base.deliveries.clear
-    Regentanz::GoogleWeather.redefine_const(:RETRY_MARKER, TEST_RETRY_MARKER)
     Regentanz::GoogleWeather.any_instance.stubs(:cache_filename => TEST_CACHE_FILE_NAME)
+		# We're in test mode here
+		Regentanz.configure do |config|
+			config.do_not_get_weather = true
+			config.suppress_stderr_output = true
+			config.cache_path = File.join RAILS_ROOT, "tmp", "/"
+			config.retry_marker = TEST_RETRY_MARKER
+		end
   end
 
   def teardown
     File.unlink(TEST_CACHE_FILE_NAME) if File.exists?(TEST_CACHE_FILE_NAME)
-    File.unlink(TEST_RETRY_MARKER) if File.exists?(TEST_RETRY_MARKER)
+    File.unlink(Regentanz.configuration.retry_marker) if File.exists?(Regentanz.configuration.retry_marker)
   end
+
+	test "should initialize with options hash" do
+		Regentanz::GoogleWeather.any_instance.expects(:get_weather).never()
+		options = { :location => "Test Valley", :lang => "es" } 
+		obj = Regentanz::GoogleWeather.new(options)
+		assert_equal "Test Valley", obj.location
+		assert_equal "es", obj.lang
+	end
+
+	test "should be compatible with old constructor" do
+		Regentanz::GoogleWeather.any_instance.expects(:get_weather).never()
+		obj = Factory(:google_weather, :location => "Test Valley")
+		assert_equal "Test Valley", obj.location
+		assert_equal "de", obj.lang
+	end
 
   def test_should_create_marker_file_and_send_email_if_invalid_xml_file_has_been_found
     stub_valid_xml_api_response!
     Regentanz::GoogleWeather.any_instance.expects(:after_api_failure_detected) # callback
     
-    weather = Regentanz::GoogleWeather.new("Berlin", weather_options)
-    assert !File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
+    weather = Factory(:google_weather)
+    assert !File.exists?(Regentanz.configuration.retry_marker)
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
 
     assert_emails 1 do
       weather.get_weather!
-      assert File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
+      assert File.exists?(Regentanz.configuration.retry_marker)
     end
   end
 
   def test_should_send_email_after_marker_file_was_deleted
     File.new(TEST_RETRY_MARKER, "w+").close
-    Regentanz::GoogleWeather.redefine_const(:RETRY_TTL, 0); sleep 0.2
+    Regentanz.configuration.expects(:retry_ttl).returns(0); sleep 0.2
     stub_valid_xml_api_response!
     Regentanz::GoogleWeather.any_instance.expects(:after_api_failure_resumed) # callback
 
-    weather = Regentanz::GoogleWeather.new("Berlin", weather_options)
-    assert File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
+    weather = Factory(:google_weather)
+    assert File.exists?(Regentanz.configuration.retry_marker)
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
 
     assert_emails 1 do
       weather.get_weather!
-      assert !File.exists?(Regentanz::GoogleWeather::RETRY_MARKER)
+      assert !File.exists?(Regentanz.configuration.retry_marker)
     end
   end
 
-  def test_should_accept_lang_option
-    weather = Regentanz::GoogleWeather.new("Berlin",weather_options(:lang => :es) )
+  test "should have lang option" do 
+    weather = Factory(:google_weather, :lang => :es)
     assert_equal "es", weather.lang
   end
 
@@ -118,7 +139,7 @@ EOF
 
   # Return a few default options for the test environment
   def weather_options(options = {})
-    {:do_not_get_weather => true, :suppress_stderr_output => true, :cache_id => "test"}.merge(options.symbolize_keys!)
+    {:cache_id => "test"}.merge(options.symbolize_keys!)
   end
 
 end

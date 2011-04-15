@@ -25,5 +25,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'mocha'
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'redgreen'
+  s.add_development_dependency 'factory_girl'
 
 end

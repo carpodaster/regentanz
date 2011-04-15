@@ -1,4 +1,8 @@
 == CHANGELOG
 
+=== v0.0.4 // 2011-04-15
+* Moved constants into class-wide configuration
+* Callback-stubs
+
 === v0.0.1 // 2011-04-13
 * Initially packaged model as a gem
