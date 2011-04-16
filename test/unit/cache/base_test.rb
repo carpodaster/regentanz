@@ -28,9 +28,11 @@ class Regentanz::Cache::BaseTest < ActiveSupport::TestCase
 
   test "should have key sanitizer class method" do
     assert_respond_to Regentanz::Cache::Base, :sanitize_key
-    Time.expects(:now).returns("time data")
-    key = Digest::SHA1.hexdigest("--a test string--time data")
+    key = Digest::SHA1.hexdigest("a test string")
     assert_equal key, Regentanz::Cache::Base.sanitize_key("a test string")
+
+    assert_not_equal Regentanz::Cache::Base.sanitize_key("a test string"),
+      Regentanz::Cache::Base.sanitize_key("another test string")
   end
 
 

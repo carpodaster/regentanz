@@ -15,7 +15,7 @@ module Regentanz
 
       # Returns a unique alpha-numeric cache key
       def self.sanitize_key(key)
-        Digest::SHA1.hexdigest("--#{key}--#{Time.now}")
+        Digest::SHA1.hexdigest(key.to_s)
       end
 
       # Stores cache +value+ as +key+.
