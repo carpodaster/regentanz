@@ -27,9 +27,14 @@ module Regentanz
       options = args.extract_options!
       @options  = options.symbolize_keys
       @location = args.first || options[:location]
-      @cache_id = options[:cache_id] || Regentanz.configuration.cache_backend.sanitize_key(@location)
       self.lang = options[:lang]
-      @cache    = Regentanz.configuration.cache_backend.new if Regentanz.configuration.cache_backend
+
+      # Activate caching
+      if Regentanz.configuration.cache_backend
+        @cache    = Regentanz.configuration.cache_backend.new if Regentanz.configuration.cache_backend
+        @cache_id = options[:cache_id] || Regentanz.configuration.cache_backend.sanitize_key(@location)
+      end
+      
       @geodata  = options[:geodata] if options[:geodata] and options[:geodata][:lat] and options[:geodata][:lng]
       get_weather() unless Regentanz.configuration.do_not_get_weather
     end
@@ -83,9 +88,11 @@ module Regentanz
       if cache_valid?
         @xml = convert_encoding(@cache.get(@cache_id))
       else
-        @cache.expire!(@cache_id)
         @xml = convert_encoding(do_request(Regentanz.configuration.base_url + "?weather=#{CGI::escape(@location)}&hl=#{@lang}"))
-        @cache.set(@cache_id, @xml)
+        if @cache
+          @cache.expire!(@cache_id)
+          @cache.set(@cache_id, @xml)
+        end
     end
       parse_xml() if @xml
     end

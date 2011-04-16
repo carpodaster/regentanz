@@ -89,6 +89,14 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     assert_not_nil obj.cache_id
   end
 
+  test "should work with caching disabled" do
+    Regentanz.configuration.cache_backend = nil
+    stub_valid_xml_api_response!
+    obj = Factory(:google_weather, :cache_id => nil)
+    assert_nil obj.cache
+    obj.get_weather!
+  end
+
   private
 
   # Return a few default options for the test environment
