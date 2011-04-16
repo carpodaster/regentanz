@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<xml_api_reply version="1">
+    <weather module_id="0" tab_id="0" mobile_row="0" mobile_zipped="1" row="0" section="0" >
+        <forecast_information>
+            <city data="Berlin, Berlin"/><postal_code data="Berlin,Germany"/>
+            <latitude_e6 data=""/>
+            <longitude_e6 data=""/>
+            <forecast_date data="<%= Date.today.strftime("%Y-%m-%d") %>"/>
+            <current_date_time data="<%= 5.minutes.ago.utc.strftime("%Y-%m-%d %H:%M:00") %> +0000"/>
+            <unit_system data="SI"/>
+        </forecast_information>
+        <current_conditions>
+            <condition data="Klar"/><temp_f data="77"/>
+            <temp_c data="25"/>
+            <humidity data="Feuchtigkeit: 57 %"/>
+            <icon data="/ig/images/weather/sunny.gif"/>
+            <wind_condition data="Wind: W mit 24 km/h"/>
+        </current_conditions>
+        <forecast_conditions>
+            <day_of_week data="Do."/><low data="16"/>
+            <high data="31"/>
+            <icon data="/ig/images/weather/chance_of_rain.gif"/>
+            <condition data="Vereinzelt Regen"/>
+        </forecast_conditions>
+    </weather>
+</xml_api_reply>
