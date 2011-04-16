@@ -29,6 +29,12 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     assert_equal "de", obj.lang
   end
 
+  test "should have cache instance" do
+    obj = Factory(:google_weather)
+    assert_respond_to obj, :cache
+    assert_kind_of Regentanz.configuration.cache_backend, obj.cache
+  end
+
   def test_should_create_marker_file_and_send_email_if_invalid_xml_file_has_been_found
     stub_valid_xml_api_response!
     Regentanz::GoogleWeather.any_instance.expects(:after_api_failure_detected) # callback
@@ -78,11 +84,12 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     assert weather.sunset.is_a? Time
   end
 
-  test "should return cache filename" do
-    obj  = Factory(:google_weather, :cache_id => "foo")
-    assert_equal File.join(Regentanz.configuration.cache_dir, "#{Regentanz.configuration.cache_prefix}_foo.xml"), obj.cache_filename
+  test "should set default cache_id by location" do
+    obj = Regentanz::GoogleWeather.new(:location => "Test Valley", :cache_id => nil)
+    assert_not_nil obj.cache_id
   end
 
+  private
 
   # Return a few default options for the test environment
   def weather_options(options = {})

@@ -11,7 +11,7 @@ module Regentanz
     XML_ENCODING = 'LATIN1' # source encoding of the XML data
 
     attr_accessor :location, :cache_id
-    attr_reader   :lang, :xml
+    attr_reader   :cache, :lang, :xml
 
     # Creates an object and queries the weather API.
     #
@@ -27,8 +27,9 @@ module Regentanz
       options = args.extract_options!
       @options  = options.symbolize_keys
       @location = args.first || options[:location]
-      @cache_id = options[:cache_id]
+      @cache_id = options[:cache_id] || Regentanz.configuration.cache_backend.sanitize_key(@location)
       self.lang = options[:lang]
+      @cache    = Regentanz.configuration.cache_backend.new if Regentanz.configuration.cache_backend
       @geodata  = options[:geodata] if options[:geodata] and options[:geodata][:lat] and options[:geodata][:lng]
       get_weather() unless Regentanz.configuration.do_not_get_weather
     end
@@ -37,11 +38,6 @@ module Regentanz
     # XML elements of <current_conditions>...</current_conditions>
     def current
       @current ||= OpenStruct.new(@current_raw)
-    end
-
-    # Returns the full path to the cache file based upon Regentanz::Configuration#cache_dir and _cache_id_
-    def cache_filename
-      @cache_filename ||= File.join(Regentanz.configuration.cache_dir, "#{Regentanz.configuration.cache_prefix}_#{@cache_id}.xml")
     end
 
     # Returns an array of OpenStruct objects with attributes corresponding to the
@@ -85,11 +81,11 @@ module Regentanz
     # Proxies +do_request+ and +parse_request+
     def get_weather
       if cache_valid?
-        @xml = convert_encoding(load_from_cache)
+        @xml = convert_encoding(@cache.get(@cache_id))
       else
-        expire_cache!
+        @cache.expire!(@cache_id)
         @xml = convert_encoding(do_request(Regentanz.configuration.base_url + "?weather=#{CGI::escape(@location)}&hl=#{@lang}"))
-        cache_request() if @xml
+        @cache.set(@cache_id, @xml)
     end
       parse_xml() if @xml
     end
@@ -167,17 +163,13 @@ module Regentanz
       hash
     end
 
-    # Evaluates to +true+ if a _cache_id_ option is set.
-    def cache_available?
-      @cache_id.present?
-    end
-
     # Returns +true+ if a given cache file contains data not older than Regentanz::Configuration#cache_ttl seconds
+    # TODO properly use cache backend's #valid?
     def cache_valid?
       validity = false
-      if cache_available? and File.exists?(cache_filename)
+      if @cache and @cache.available?(@cache_id)
         begin
-          doc  = REXML::Document.new(load_from_cache)
+          doc  = REXML::Document.new(@cache.get(@cache_id))
           node = doc.elements["xml_api_reply/weather/forecast_information/current_date_time"]
           time = node.attribute("data").to_s.to_time if node
           validity = time ? time > Regentanz.configuration.cache_ttl.seconds.ago : false
@@ -187,27 +179,6 @@ module Regentanz
         end
       end
       validity
-    end
-
-    # Reads cache file and returns its contents, blindly assuming its XML
-    def load_from_cache
-      File.open(cache_filename, "r") { |file| file.read }
-    end
-
-    # Unlinks the cache file
-    def expire_cache!
-      File.delete(cache_filename) if File.exists?(cache_filename)
-    end
-
-    # Writes the instance var +xml+ to the cache file if the cache path is available
-    def cache_request
-      if cache_available? and @xml
-        begin
-          File.open(cache_filename, "w") { |file| file.puts @xml }
-        rescue => e
-          error_output(e.message)
-        end
-      end
     end
 
     # Converts a string from XML_ENCODING to UTF-8 using the Iconv library.
@@ -241,7 +212,7 @@ module Regentanz
         File.new(Regentanz.configuration.retry_marker, "w+").close
       elsif recovering_from_incorrect_api_reply? and File.new(Regentanz.configuration.retry_marker).mtime < Regentanz.configuration.retry_ttl.seconds.ago
         # Marker file is old enough, delete the (invalid) cache file and remove the marker_file
-        expire_cache!
+        @cache.expire!(@cache_id)
         after_api_failure_resumed()
         File.delete(Regentanz.configuration.retry_marker) if File.exists?(Regentanz.configuration.retry_marker)
         SupportMailer.deliver_weather_retry_marker_notification!(self, :unset)
