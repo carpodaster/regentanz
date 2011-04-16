@@ -16,7 +16,8 @@ Much easier using bundler:
 === Configuration
 *Regentanz* can either be configured through a configure block or directly via
 its configuration object. It uses sane defaults so there should be no need for
-configuration to start right off.
+configuration to start right off. If you're using *Regentanz* with Rails,
+a file in <tt>config/initializers</tt> is your friend.
 
 Configure block:
  Regentanz.configure do |config|
