@@ -7,11 +7,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
   def setup
     # FIXME Remove ActionMailer
     ActionMailer::Base.deliveries.clear
-    # Ensure test mode and reset state when tests tinkered with options
-    Regentanz.configure do |config| 
-      config.do_not_get_weather = true
-      config.retry_ttl = Regentanz::Configuration.default_retry_ttl
-    end
+    setup_regentanz_test_configuration!
   end
 
   def teardown
