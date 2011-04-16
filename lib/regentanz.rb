@@ -1,6 +1,7 @@
 require 'active_support'
 require 'actionmailer'
 require 'regentanz/version'
+require 'regentanz/cache'
 require 'regentanz/configuration'
 require 'regentanz/configurator'
 require 'regentanz/callbacks'
