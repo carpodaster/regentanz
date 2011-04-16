@@ -8,13 +8,16 @@ module Regentanz
       # ie. if it reponds to all mandatory methods
       def self.lint(instance_or_class)
         instance = instance_or_class.is_a?(Class) ? instance_or_class.new : instance_or_class
-        [:add, :available?, :expire!, :valid?].inject(true) do |memo, method|
+        [:set, :get, :available?, :expire!, :valid?].inject(true) do |memo, method|
           memo && instance.respond_to?(method)
         end
       end
 
       # Stores cache +value+ as +key+.
-      def add(key, value); end
+      def set(key, value); end
+
+      # Retrieves cached value from +key+.
+      def get(key); end
 
       # Checks if cache under +key+ is available.
       def available?(key); end

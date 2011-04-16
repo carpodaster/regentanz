@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), '..', '..', 'test_helper')
 
 class Regentanz::Cache::BaseTest < ActiveSupport::TestCase
 
-  LINT_METHODS = [:available?, :add, :expire!, :valid?]
+  LINT_METHODS = [:available?, :expire!, :get, :set, :valid?]
 
   test "should define public interface for all cache backend" do
     obj = Regentanz::Cache::Base.new
