@@ -1,1 +1,2 @@
-require File.join File.dirname(__FILE__), 'cache/base'
+require 'regentanz/cache/base'
+require 'regentanz/cache/file'
