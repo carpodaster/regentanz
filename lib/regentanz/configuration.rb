@@ -5,6 +5,7 @@ module Regentanz
 
     DEFAULT_OPTIONS = [
       :base_url,
+      :cache_backend,
       :cache_dir,
       :cache_prefix,
       :cache_ttl,
@@ -18,12 +19,13 @@ module Regentanz
     ]
 
     # Define default values
-    @@default_base_url     = "http://www.google.com/ig/api"
-    @@default_cache_dir    = Dir.tmpdir
-    @@default_cache_prefix = "regentanz"
-    @@default_cache_ttl    = 14400 # 4 hours
-    @@default_retry_ttl    = 3600  # 1 hour
-    @@default_retry_marker = File.join(@@default_cache_dir, "#{@@default_cache_prefix}_api_retry.txt")
+    @@default_base_url      = "http://www.google.com/ig/api"
+    @@default_cache_backend = Regentanz::Cache::File
+    @@default_cache_dir     = Dir.tmpdir
+    @@default_cache_prefix  = "regentanz"
+    @@default_cache_ttl     = 14400 # 4 hours
+    @@default_retry_ttl     = 3600  # 1 hour
+    @@default_retry_marker  = File.join(@@default_cache_dir, "#{@@default_cache_prefix}_api_retry.txt")
     
     OPTIONS.each { |opt|  attr_accessor(opt) }
     DEFAULT_OPTIONS.each { |cvar| cattr_reader(:"default_#{cvar}", :instance_reader => false) } # class getter for all DEFAULT_OPTION cvars

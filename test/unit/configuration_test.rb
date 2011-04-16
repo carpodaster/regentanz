@@ -18,6 +18,7 @@ class ConfigurationTest < ActiveSupport::TestCase
   test "should have configuration" do
     configuration_options = [
       :base_url,
+      :cache_backend,
       :cache_dir,
       :cache_prefix,
       :cache_ttl,
