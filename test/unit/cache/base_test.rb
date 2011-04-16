@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'test_helper')
+require 'digest/sha1'
 
 class Regentanz::Cache::BaseTest < ActiveSupport::TestCase
 
@@ -23,6 +24,13 @@ class Regentanz::Cache::BaseTest < ActiveSupport::TestCase
     end
     assert Regentanz::Cache::Base.lint(obj)
     assert Regentanz::Cache::Base.lint(Object)
+  end
+
+  test "should have key sanitizer class method" do
+    assert_respond_to Regentanz::Cache::Base, :sanitize_key
+    Time.expects(:now).returns("time data")
+    key = Digest::SHA1.hexdigest("--a test string--time data")
+    assert_equal key, Regentanz::Cache::Base.sanitize_key("a test string")
   end
 
 
