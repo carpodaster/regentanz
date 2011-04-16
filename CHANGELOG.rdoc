@@ -1,5 +1,8 @@
 == CHANGELOG
 
+=== v0.1.0 // 2011-04-16
+* Moved caching into separate module
+
 === v0.0.5 // 2011-04-15
 * Removed RAILS_ROOT
 * Moved constants into class-wide configuration

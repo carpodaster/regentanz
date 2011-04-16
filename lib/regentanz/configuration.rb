@@ -34,6 +34,7 @@ module Regentanz
     #
     # == Default Options
     # * +base_url+: HTTP API, request-specific calls will be appended (default: +http://www.google.com/ig/api+)
+    # * +cache_backend+: defaults to +Regentanz::Cache::File+
     # * +cache_dir+: defaults to +Dir.tmpdir+
     # * +cache_prefix+: String to prefix both cache file and retry_marker (if not specified otherwise) with
     # * +cache_ttl+: time in seconds for which cache data is considered valid. Default: 14400 (4 hours).

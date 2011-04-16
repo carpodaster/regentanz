@@ -20,8 +20,8 @@ module Regentanz
     #
     # === Available options
     # * +location+ String to pass to Google's weather API (mandatory)
-    # * +:cache_id+ enables caching with a unique identifier to locate a cached file
-    # * +:geodata+ a hash with keys :lat and :lng, required for sunset/-rise calculations
+    # * +cache_id+ enables caching with a unique identifier to locate a cached file
+    # * +geodata+ a hash with keys :lat and :lng, required for sunset/-rise calculations
     # * +lang+ Desired language for the returned results (Defaults to "de")
     def initialize(*args)
       options = args.extract_options!
