@@ -13,7 +13,7 @@ module Regentanz
         end
       end
 
-      # Returns a unique alpha-numeric cache key
+      # Returns a alpha-numeric cache key
       def self.sanitize_key(key)
         Digest::SHA1.hexdigest(key.to_s)
       end
