@@ -19,8 +19,7 @@ class Regentanz::Cache::BaseTest < ActiveSupport::TestCase
     assert !Regentanz::Cache::Base.lint(Object)
 
     LINT_METHODS.each do |method|
-      obj.stubs(method)
-      Object.stubs(method)
+      Object.any_instance.stubs(method)
     end
     assert Regentanz::Cache::Base.lint(obj)
     assert Regentanz::Cache::Base.lint(Object)

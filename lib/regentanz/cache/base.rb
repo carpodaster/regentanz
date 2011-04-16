@@ -7,8 +7,9 @@ module Regentanz
       # Checks if +instance_or_class+ complies to cache backend duck type,
       # ie. if it reponds to all mandatory methods
       def self.lint(instance_or_class)
+        instance = instance_or_class.is_a?(Class) ? instance_or_class.new : instance_or_class
         [:add, :available?, :expire!, :valid?].inject(true) do |memo, method|
-          memo && instance_or_class.respond_to?(method)
+          memo && instance.respond_to?(method)
         end
       end
 
