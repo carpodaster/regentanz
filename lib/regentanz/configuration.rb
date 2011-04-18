@@ -49,7 +49,7 @@ module Regentanz
         self.send(:"#{option}=", self.class.send(:class_variable_get, :"@@default_#{option}") )
       end
     end
-    
+
   end
 
 end

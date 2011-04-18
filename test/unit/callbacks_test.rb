@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'test_helper')
 
-class CallbacksTest < Test::Unit::TestCase
+class CallbacksTest < ActiveSupport::TestCase
 
   def setup
     @object = Object.new
@@ -9,7 +9,7 @@ class CallbacksTest < Test::Unit::TestCase
 
   def test_should_define_constant
     assert Regentanz::Callbacks::CALLBACKS
-    expected_callbacks = %w(after_api_failure_detected after_api_failure_resumed)
+    expected_callbacks = [:api_failure_detected, :api_failure_resumed]
     assert_equal expected_callbacks, Regentanz::Callbacks::CALLBACKS
   end
 
@@ -23,5 +23,5 @@ class CallbacksTest < Test::Unit::TestCase
       assert @object.private_methods.include?(callback_method.to_s), "#{callback_method} not defined"
     end
   end
-  
+
 end

@@ -1,7 +1,7 @@
 module Regentanz
   module Callbacks
 
-    CALLBACKS = %w(after_api_failure_detected after_api_failure_resumed)
+    CALLBACKS = [:api_failure_detected, :api_failure_resumed]
 
     CALLBACKS.each do |callback_method|
       # Define no-op stubs for all CALLBACKS
