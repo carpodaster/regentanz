@@ -35,21 +35,21 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     assert_kind_of Regentanz.configuration.cache_backend, obj.cache
   end
 
-  def test_should_create_marker_file_and_send_email_if_invalid_xml_file_has_been_found
+  test "should enter retry state and send email if invalid xml file has been found" do
     stub_valid_xml_api_response!
     Regentanz::GoogleWeather.any_instance.expects(:after_api_failure_detected) # callback
     
     weather = Factory(:google_weather)
-    assert !File.exists?(Regentanz.configuration.retry_marker)
+    assert !weather.waiting_for_retry?
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
 
     assert_emails 1 do
       weather.get_weather!
-      assert File.exists?(Regentanz.configuration.retry_marker)
+      assert weather.waiting_for_retry?
     end
   end
 
-  test "should remove retry marker and invalid cache file when retry_ttl waittime is over" do
+  test "should leave retry state remove invalid cache file when retry_ttl waittime is over" do
     File.new(Regentanz.configuration.retry_marker, "w+").close
     assert File.exists?(Regentanz.configuration.retry_marker) # ensure test setup
     Regentanz.configuration.retry_ttl = 0; sleep 0.1
@@ -60,7 +60,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
 
     assert_emails 1 do
       weather.get_weather!
-      assert !File.exists?(Regentanz.configuration.retry_marker)
+      assert !weather.waiting_for_retry?
     end
   end
 

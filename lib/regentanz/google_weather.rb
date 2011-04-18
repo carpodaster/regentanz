@@ -186,7 +186,7 @@ module Regentanz
           validity = time ? time > Regentanz.configuration.cache_ttl.seconds.ago : false
         rescue REXML::ParseException
           retry_after_incorrect_api_reply
-          validity = recovering_from_incorrect_api_reply? # not really valid, but we need to wait a bit.
+          validity = waiting_for_retry? # not really valid, but we need to wait a bit.
         end
       end
       validity
@@ -206,22 +206,17 @@ module Regentanz
       self.class::XML_ENCODING != "UTF-8" ? Iconv.iconv("UTF-8", self.class::XML_ENCODING, str).flatten.join(" ") : str
     end
 
-    # Returns +true+ if a Regentanz::Configuration#retry_marker file exists
-    def recovering_from_incorrect_api_reply?
-      File.exists?(Regentanz.configuration.retry_marker)
-    end
-
     # Brings the outbound API-calls to a halt for Regentanz::Configuration#retry_ttl seconds by creating
     # a marker file. Flushes the incorrect cached API response after Regentanz::Configuration#retry_ttl
     # seconds.
     def retry_after_incorrect_api_reply
-      if !recovering_from_incorrect_api_reply?
+      if !waiting_for_retry?
         # We are run for the first time, create the marker file
         # TODO remove dependency to SupportMailer class
         after_api_failure_detected()
         SupportMailer.deliver_weather_retry_marker_notification!(self, :set)
         File.new(Regentanz.configuration.retry_marker, "w+").close
-      elsif recovering_from_incorrect_api_reply? and File.new(Regentanz.configuration.retry_marker).mtime < Regentanz.configuration.retry_ttl.seconds.ago
+      elsif @cache and @cache.retry!
         # Marker file is old enough, delete the (invalid) cache file and remove the marker_file
         @cache.expire!(@cache_id)
         after_api_failure_resumed()
