@@ -13,6 +13,16 @@ Much easier using bundler:
  # Gemfile
  gem 'regentanz', :git => "git://github.com/carpodaster/regentanz"
 
+=== Usage
+Supply a location and a language to retrieve weather:
+  weather = Regentanz::GoogleWeather.new(:location => "Berlin, Germany", :lang => :en)
+  weather.current   # current condition
+  weather.forecast  # array with forecast conditions
+
+It uses <b>file-based caching</b> by default, other cache backends will follow.
+See {Regentanz::Cache::Base}[https://github.com/carpodaster/regentanz/blob/master/lib/regentanz/cache/base.rb]
+for details (and if you want to create your own backend).
+
 === Configuration
 *Regentanz* can either be configured through a configure block or directly via
 its configuration object. It uses sane defaults so there should be no need for
@@ -30,16 +40,6 @@ Direct configuration:
  
 See {Regentanz::Configuration}[https://github.com/carpodaster/regentanz/blob/master/lib/regentanz/configuration.rb]
 for a full list of configurable options.
-
-=== Usage
-Supply a location and a language to retrieve weather:
-  weather = Regentanz::GoogleWeather.new(:location => "Berlin, Germany", :lang => :en)
-  weather.current   # current condition
-  weather.forecast  # array with forecast conditions
-
-It uses <b>file-based caching</b> by default, other cache backends will follow.
-See {Regentanz::Cache::Base}[https://github.com/carpodaster/regentanz/blob/master/lib/regentanz/cache/base.rb]
-for details (and if you want to create your own backend).
 
 === Credits
 *Regentanz* is based upon and extracted from a standalone Ruby class made for
