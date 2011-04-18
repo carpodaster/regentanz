@@ -65,7 +65,7 @@ module Regentanz
 
       # Checks if we've waited long enough. Deletes a possible retry
       # marker file (and returns true) if so or returns false if not
-      def retry!
+      def unset_retry_state!
         marker = Regentanz.configuration.retry_marker
         if waiting_for_retry? and ::File.new(marker).mtime < Regentanz.configuration.retry_ttl.seconds.ago
           ::File.delete(marker) if ::File.exists?(marker)

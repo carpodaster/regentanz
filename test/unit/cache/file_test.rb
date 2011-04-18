@@ -123,10 +123,10 @@ class Regentanz::Cache::FileTest < ActiveSupport::TestCase
     obj = Regentanz::Cache::File.new
     File.new(Regentanz.configuration.retry_marker, "w+").close
     Regentanz.configuration.retry_ttl = 1000.hours.to_i # something incredibly high to warrant retry state
-    assert !obj.retry! # not waited long enough 
+    assert !obj.unset_retry_state! # not waited long enough
 
     Regentanz.configuration.retry_ttl = 0
-    assert obj.retry!
+    assert obj.unset_retry_state!
     assert !File.exists?(Regentanz.configuration.retry_marker)
   end
 

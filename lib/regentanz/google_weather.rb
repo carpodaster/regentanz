@@ -216,7 +216,7 @@ module Regentanz
         after_api_failure_detected()
         SupportMailer.deliver_weather_retry_marker_notification!(self, :set)
         File.new(Regentanz.configuration.retry_marker, "w+").close
-      elsif @cache and @cache.retry!
+      elsif @cache and @cache.unset_retry_state!
         # Marker file is old enough, delete the (invalid) cache file and remove the marker_file
         @cache.expire!(@cache_id)
         after_api_failure_resumed()

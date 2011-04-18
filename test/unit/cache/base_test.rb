@@ -42,7 +42,7 @@ class Regentanz::Cache::BaseTest < ActiveSupport::TestCase
 
   test "should check if retry wait time is over" do
     obj = Regentanz::Cache::Base.new
-    assert_respond_to obj, :retry!
+    assert_respond_to obj, :unset_retry_state!
   end
 
   test "should enter retry state" do

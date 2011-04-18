@@ -39,7 +39,7 @@ module Regentanz
 
       # Checks if we've waited enough. Unsets a possible retry
       # state (and returns true) if so or returns false if not
-      def retry!; end
+      def unset_retry_state!; end
 
       # Persists a timeout state
       def set_retry_state!; end
