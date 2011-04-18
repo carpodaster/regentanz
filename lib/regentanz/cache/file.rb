@@ -55,7 +55,30 @@ module Regentanz
           # TODO pass exception upstream until properly delegated in the first place?
         end
       end
-     
+
+      # Returns whether or not weather retrieval from the API
+      # is currently waiting for a timeout to expire; here: existence of
+      # a retry marker file
+      def waiting_for_retry?
+        ::File.exists?(Regentanz.configuration.retry_marker)
+      end
+
+      # Checks if we've waited long enough. Deletes a possible retry
+      # marker file (and returns true) if so or returns false if not
+      def retry!
+        marker = Regentanz.configuration.retry_marker
+        if waiting_for_retry? and ::File.new(marker).mtime < Regentanz.configuration.retry_ttl.seconds.ago
+          ::File.delete(marker) if ::File.exists?(marker)
+          true
+        end
+      end
+
+      # Persists the timeout state by writing a retry_marker file
+      def set_retry_state!
+        ::File.open(Regentanz.configuration.retry_marker, "w+").close
+        waiting_for_retry?
+      end
+      
     end
 
   end

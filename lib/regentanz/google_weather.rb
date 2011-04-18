@@ -72,6 +72,10 @@ module Regentanz
       @sunset  ||= @geodata.blank? ? nil : sun_rise_set(:sunset, @geodata[:lat], @geodata[:lng])
     end
 
+    def waiting_for_retry?
+      @cache && @cache.waiting_for_retry?
+    end
+
     private
 
     # Encapsulate output of error messages. Will output to $stderr unless

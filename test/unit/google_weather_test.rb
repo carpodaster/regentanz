@@ -97,6 +97,15 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     obj.get_weather!
   end
 
+  test "should delegate retry state to cache instance" do
+    obj = Factory(:google_weather)
+    assert_respond_to obj, :waiting_for_retry?
+    assert_not_nil obj.cache
+    assert !obj.waiting_for_retry?
+    obj.cache.expects(:waiting_for_retry?).returns(true)
+    assert obj.waiting_for_retry?
+  end
+
   private
 
   # Return a few default options for the test environment

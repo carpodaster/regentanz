@@ -33,6 +33,17 @@ module Regentanz
       # Checks if cache under +key+ is still valid.
       def valid?(key); end
 
+      # Returns whether or not weather retrieval from the API
+      # is currently waiting for a timeout to expire
+      def waiting_for_retry?; end
+
+      # Checks if we've waited enough. Unsets a possible retry
+      # state (and returns true) if so or returns false if not
+      def retry!; end
+
+      # Persists a timeout state
+      def set_retry_state!; end
+
     end
 
   end

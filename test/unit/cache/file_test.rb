@@ -2,6 +2,10 @@ require File.join(File.dirname(__FILE__), '..', '..', 'test_helper')
 
 class Regentanz::Cache::FileTest < ActiveSupport::TestCase
 
+  def setup
+    setup_regentanz_test_configuration!
+  end
+
   def teardown
     Dir.glob(File.join(Regentanz.configuration.cache_dir, "**", "*")).each { |file| File.unlink(file) }
   end
@@ -101,6 +105,37 @@ class Regentanz::Cache::FileTest < ActiveSupport::TestCase
     assert_nothing_raised do
       assert !obj.valid?('test')
     end
+  end
+
+  # ##############################
+  # Retry-state tests
+  # ##############################
+
+  test "should inform about retry state" do
+    obj = Regentanz::Cache::File.new
+    assert !obj.waiting_for_retry?
+
+    File.expects(:exists?).with(Regentanz.configuration.retry_marker).returns(true)
+    assert obj.waiting_for_retry?
+  end
+
+  test "should check if retry wait time is over" do
+    obj = Regentanz::Cache::File.new
+    File.new(Regentanz.configuration.retry_marker, "w+").close
+    Regentanz.configuration.retry_ttl = 1000.hours.to_i # something incredibly high to warrant retry state
+    assert !obj.retry! # not waited long enough 
+
+    Regentanz.configuration.retry_ttl = 0
+    assert obj.retry!
+    assert !File.exists?(Regentanz.configuration.retry_marker)
+  end
+
+  test "should enter retry state" do
+    obj = Regentanz::Cache::File.new
+    assert !File.exists?(Regentanz.configuration.retry_marker)
+    assert obj.set_retry_state!
+    assert obj.set_retry_state! # subsequent calls return the same
+    assert File.exists?(Regentanz.configuration.retry_marker)
   end
 
 end

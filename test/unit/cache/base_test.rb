@@ -35,5 +35,19 @@ class Regentanz::Cache::BaseTest < ActiveSupport::TestCase
       Regentanz::Cache::Base.sanitize_key("another test string")
   end
 
+  test "should inform about retry state" do
+    obj = Regentanz::Cache::Base.new
+    assert_respond_to obj, :waiting_for_retry?
+  end
+
+  test "should check if retry wait time is over" do
+    obj = Regentanz::Cache::Base.new
+    assert_respond_to obj, :retry!
+  end
+
+  test "should enter retry state" do
+    obj = Regentanz::Cache::Base.new
+    assert_respond_to obj, :set_retry_state!
+  end
 
 end
