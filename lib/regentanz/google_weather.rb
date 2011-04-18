@@ -210,17 +210,16 @@ module Regentanz
     # a marker file. Flushes the incorrect cached API response after Regentanz::Configuration#retry_ttl
     # seconds.
     def retry_after_incorrect_api_reply
-      if !waiting_for_retry?
+      if !waiting_for_retry? and @cache
         # We are run for the first time, create the marker file
         # TODO remove dependency to SupportMailer class
-        after_api_failure_detected()
+        after_api_failure_detected() # callback
         SupportMailer.deliver_weather_retry_marker_notification!(self, :set)
-        File.new(Regentanz.configuration.retry_marker, "w+").close
+        @cache.set_retry_state!
       elsif @cache and @cache.unset_retry_state!
         # Marker file is old enough, delete the (invalid) cache file and remove the marker_file
         @cache.expire!(@cache_id)
-        after_api_failure_resumed()
-        File.delete(Regentanz.configuration.retry_marker) if File.exists?(Regentanz.configuration.retry_marker)
+        after_api_failure_resumed() # callback
         SupportMailer.deliver_weather_retry_marker_notification!(self, :unset)
       end
     end
