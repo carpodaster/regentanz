@@ -8,7 +8,7 @@ module Regentanz
     include Callbacks
 
     attr_accessor :location, :cache_id
-    attr_reader   :cache, :lang, :parser, :xml
+    attr_reader   :cache, :current, :forecast, :lang, :parser, :xml
 
     # Creates an object and queries the weather API.
     #
@@ -35,18 +35,6 @@ module Regentanz
       
       @geodata  = options[:geodata] if options[:geodata] and options[:geodata][:lat] and options[:geodata][:lng]
       get_weather() unless Regentanz.configuration.do_not_get_weather
-    end
-
-    # Returns an OpenStruct object with attributes corresponding to the
-    # XML elements of <current_conditions>...</current_conditions>
-    def current
-      @current ||= OpenStruct.new(@current_raw)
-    end
-
-    # Returns an array of OpenStruct objects with attributes corresponding to the
-    # XML elements of <forecast_conditions>...</forecast_conditions>
-    def forecast
-      @forecast ||= @forecast_raw.map { |fc| OpenStruct.new(fc) }
     end
 
     # Loads weather data from known data sources (ie. cache or external API)
@@ -117,17 +105,9 @@ module Regentanz
     #
     # Assumes the instance var +xml+ is set.
     def parse_xml
-      @current_raw = {}; @forecast_raw = []
       begin
-        @doc = REXML::Document.new(@xml)
-        @doc.elements['xml_api_reply/weather/current_conditions'].each_element do |ele|
-          @current_raw.merge! @parser.parse_node(ele)
-        end if @doc.elements['xml_api_reply/weather/current_conditions']
-
-        @doc.elements.each('xml_api_reply/weather/forecast_conditions') do |forecast_ele|
-          fc = {}; forecast_ele.each_element { |ele| fc.merge! @parser.parse_node(ele) }
-          @forecast_raw << fc
-        end if @doc.elements['xml_api_reply/weather/forecast_conditions']
+        @current = @parser.parse_current!(@xml)
+        @forecast = @parser.parse_forecast!(@xml)
       rescue REXML::ParseException => e
         error_output(e.message)
       end
