@@ -1,5 +1,10 @@
 == CHANGELOG
 
+=== v0.1.2 // 2011-04-19
+* Retry state is tracked by cache backend
+* Removed OpenStruct by adding Conditions::Forecast and Conditions::Current
+* XML-Parsing is down in parser class
+
 === v0.1.0 // 2011-04-16
 * Moved caching into separate module
 
