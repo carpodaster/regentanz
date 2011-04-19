@@ -18,9 +18,38 @@ module Regentanz
         self.class::XML_ENCODING != "UTF-8" ? Iconv.iconv("UTF-8", self.class::XML_ENCODING, data).flatten.join(" ") : data
       end
 
-      def parse!(data)
-        return if data.blank?
-        # FIXME implement
+      def parse_current!(xml)
+        return if xml.blank?
+        begin
+          doc = REXML::Document.new(xml)
+          if doc.elements['xml_api_reply/weather/current_conditions']
+            attributes = {}
+            doc.elements['xml_api_reply/weather/current_conditions'].each_element do |ele|
+              attributes.merge! parse_node(ele)
+            end
+            Regentanz::Conditions::Current.new(attributes)
+          end
+        rescue
+          # FIXME should report error
+        end
+      end
+
+      def parse_forecast!(xml)
+        return if xml.blank?
+        forecasts = []
+        begin
+          doc = REXML::Document.new(xml)
+          if doc.elements['xml_api_reply/weather/forecast_conditions']
+            attributes = {}
+            doc.elements['xml_api_reply/weather/forecast_conditions'].each_element do |ele|
+              attributes.merge! parse_node(ele)
+            end
+            forecasts << Regentanz::Conditions::Forecast.new(attributes)
+          end
+          forecasts
+        rescue
+          # FIXME should report error
+        end
       end
 
       #private # FIXME private methods should start here after parse! has been implemented
