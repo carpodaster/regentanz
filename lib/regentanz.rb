@@ -1,5 +1,5 @@
 require 'active_support'
-require 'actionmailer'
+require 'action_mailer'
 require 'regentanz/version'
 require 'regentanz/cache'
 require 'regentanz/configuration'
