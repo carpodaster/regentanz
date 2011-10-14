@@ -16,7 +16,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
 
   test "should initialize with options hash" do
     Regentanz::GoogleWeather.any_instance.expects(:get_weather).never()
-    options = { :location => "Test Valley", :lang => "es" } 
+    options = { :location => "Test Valley", :lang => "es" }
     obj = Regentanz::GoogleWeather.new(options)
     assert_equal "Test Valley", obj.location
     assert_equal "es", obj.lang
@@ -64,7 +64,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     end
   end
 
-  test "should have lang option" do 
+  test "should have lang option" do
     weather = Factory(:google_weather, :lang => :es)
     assert_equal "es", weather.lang
   end
@@ -104,6 +104,21 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     assert !obj.waiting_for_retry?
     obj.cache.expects(:waiting_for_retry?).returns(true)
     assert obj.waiting_for_retry?
+  end
+
+  test "should respond_to present?" do
+    obj = Factory(:google_weather)
+    assert_respond_to obj, :present?
+
+    Regentanz::GoogleWeather.any_instance.expects(:current).returns(nil)
+    Regentanz::GoogleWeather.any_instance.expects(:forecast).returns(nil)
+    assert_equal false, obj.present?
+
+    Regentanz::GoogleWeather.any_instance.expects(:current).returns(nil)
+    Regentanz::GoogleWeather.any_instance.expects(:forecast).returns(true)
+    assert_equal true, obj.present?
+    Regentanz::GoogleWeather.any_instance.expects(:current).returns(true)
+    assert_equal true, obj.present?
   end
 
   private

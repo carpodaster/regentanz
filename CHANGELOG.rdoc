@@ -1,5 +1,10 @@
 == CHANGELOG
 
+=== v0.1.4 // 2011-10-14
+* Fixed bug that caused forecast to have the current day only
+* present? now properly returns its true state (as opposed to always false)
+* Known issue: {current_date_time node always returns the beginning of The Epoch}[https://github.com/carpodaster/regentanz/issues/1] (API problem)
+
 === v0.1.2 // 2011-04-19
 * Retry state is tracked by cache backend
 * Removed OpenStruct by adding Conditions::Forecast and Conditions::Current

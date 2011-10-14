@@ -47,7 +47,7 @@ module Regentanz
 
     # Provide an accessor to see if we actually got weather info at all.
     def present?
-      @current_raw.present? or @forecast_raw.present?
+      current.present? or forecast.present?
     end
 
     def sunrise
@@ -99,9 +99,7 @@ module Regentanz
       end
     end
 
-    # Extracts raw info for current weather conditions and forecasts which are
-    # stored as hashes in instances variables: +current_raw+ and +forecast_raw+,
-    # respectively.
+    # Parses the raw data and Sets the +current+ and +forecast+ variables.
     #
     # Assumes the instance var +xml+ is set.
     def parse_xml

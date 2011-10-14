@@ -40,11 +40,11 @@ module Regentanz
         begin
           doc = REXML::Document.new(xml)
           if doc.elements['xml_api_reply/weather/forecast_conditions']
-            attributes = {}
-            doc.elements['xml_api_reply/weather/forecast_conditions'].each_element do |ele|
-              attributes.merge! parse_node(ele)
+            doc.elements.each('xml_api_reply/weather/forecast_conditions') do |forecast_element|
+              attributes = {}
+              forecast_element.each_element { |ele| attributes.merge! parse_node(ele) }
+              forecasts << Regentanz::Conditions::Forecast.new(attributes)
             end
-            forecasts << Regentanz::Conditions::Forecast.new(attributes)
           end
           forecasts
         rescue
