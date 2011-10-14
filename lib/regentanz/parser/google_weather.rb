@@ -10,7 +10,7 @@ module Regentanz
       # === Note
       # FIXME The XML source document seems to be delivered LATIN1 or UTF-8, completely
       # random and unpredictable.
-      # 
+      #
       # === Parameters
       # * +data+: string to convert
       def convert_encoding data
@@ -94,7 +94,7 @@ module Regentanz
         end
         hash
       end
-      
+
     end
   end
 end

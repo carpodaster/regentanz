@@ -78,7 +78,7 @@ module Regentanz
         ::File.open(Regentanz.configuration.retry_marker, "w+").close
         waiting_for_retry?
       end
-      
+
     end
 
   end

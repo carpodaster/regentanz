@@ -38,7 +38,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
   test "should enter retry state and send email if invalid xml file has been found" do
     stub_valid_xml_api_response!
     Regentanz::GoogleWeather.any_instance.expects(:api_failure_detected) # callback
-    
+
     weather = Factory(:google_weather)
     assert !weather.waiting_for_retry?
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
