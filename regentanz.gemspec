@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'actionmailer', '~> 3.0.10'
   s.add_dependency 'activesupport', '~> 3.0.10'
 
+  s.add_development_dependency 'rake'
   s.add_development_dependency 'mocha'
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'redgreen'
