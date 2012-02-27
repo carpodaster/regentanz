@@ -3,13 +3,11 @@
 innofficial (ie. undocumented and unsupported) weather API.
 
 === Installation
-The gem is not published yet and can be installed from github:
- git clone git://github.com/kaupertmedia/regentanz.git
- cd regentanz
- gem build regentanz.gemspec
- gem install regentanz-<gemversion>.gem
+The gem is available from rubygems, so using bundler "installation" would be:
+ # Gemfile
+ gem 'regentanz'
 
-Much easier using bundler:
+If you want to use the latest version, use GitHub:
  # Gemfile
  gem 'regentanz', :git => "git://github.com/carpodaster/regentanz"
 
@@ -22,6 +20,14 @@ Supply a location and a language to retrieve weather:
 It uses <b>file-based caching</b> by default, other cache backends will follow.
 See {Regentanz::Cache::Base}[https://github.com/carpodaster/regentanz/blob/master/lib/regentanz/cache/base.rb]
 for details (and if you want to create your own backend).
+
+=== Handling API-Errors
+
+In order to handle errors, a certain mailer is needed. The gem expects
+ SupportMailer#weather_retry_marker_notification
+
+The mailer-method gets two arguments: an instance of +Regentanz::GoogleWeather+ and
+a symbol informing wether the API-failure just happened (+:set+) or has been remedied (+:unset+).
 
 === Configuration
 *Regentanz* can either be configured through a configure block or directly via
