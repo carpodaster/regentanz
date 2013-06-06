@@ -43,7 +43,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     assert !weather.waiting_for_retry?
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
 
-    assert_emails 1 do
+    assert_difference "ActionMailer::Base.deliveries.size" do
       weather.get_weather!
       assert weather.waiting_for_retry?
     end
@@ -58,7 +58,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
     weather = Factory(:google_weather)
 
-    assert_emails 1 do
+    assert_difference "ActionMailer::Base.deliveries.size" do
       weather.get_weather!
       assert !weather.waiting_for_retry?
     end

@@ -1,6 +1,5 @@
 .DS_Store
-nbproject
-
+pkg
 *~
 *.swp
 Gemfile.lock
