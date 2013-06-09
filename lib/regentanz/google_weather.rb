@@ -1,3 +1,4 @@
+require 'cgi'
 module Regentanz
   class GoogleWeather
     require 'net/http'
