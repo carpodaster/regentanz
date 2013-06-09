@@ -1,10 +1,10 @@
 require 'cgi'
+require 'net/http'
+require 'rexml/document'
+require 'ostruct'
+
 module Regentanz
   class GoogleWeather
-    require 'net/http'
-    require 'rexml/document'
-    require 'ostruct'
-
     include Astronomy
     include Callbacks
 
