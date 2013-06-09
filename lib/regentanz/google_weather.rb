@@ -135,15 +135,14 @@ module Regentanz
     def retry_after_incorrect_api_reply
       if !waiting_for_retry? and @cache
         # We are run for the first time, create the marker file
-        # TODO remove dependency to SupportMailer class
         api_failure_detected # callback
-        SupportMailer.weather_retry_marker_notification(self, :set).deliver!
+        # TODO execute custom callback
         @cache.set_retry_state!
       elsif @cache and @cache.unset_retry_state!
         # Marker file is old enough, delete the (invalid) cache file and remove the marker_file
         @cache.expire!(@cache_id)
         api_failure_resumed # callback
-        SupportMailer.weather_retry_marker_notification(self, :unset).deliver!
+        # TODO execute custom callback
       end
     end
 
