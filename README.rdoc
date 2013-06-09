@@ -2,14 +2,15 @@
 *Regentanz* (German: <i>rain dance</i>) is a Ruby library to connect to Google's
 innofficial (ie. undocumented and unsupported) weather API.
 
+
+=== Discontinued Weather API
+*Notice*: Google has discontinued their weather service.
+The Gem is currently *not* able to return weather data.
+
 === Installation
 The gem is available from rubygems, so using bundler "installation" would be:
  # Gemfile
  gem 'regentanz'
-
-If you want to use the latest version, use GitHub:
- # Gemfile
- gem 'regentanz', :git => "git://github.com/carpodaster/regentanz"
 
 === Usage
 Supply a location and a language to retrieve weather:
@@ -23,11 +24,7 @@ for details (and if you want to create your own backend).
 
 === Handling API-Errors
 
-In order to handle errors, a certain mailer is needed. The gem expects
- SupportMailer#weather_retry_marker_notification
-
-The mailer-method gets two arguments: an instance of +Regentanz::GoogleWeather+ and
-a symbol informing wether the API-failure just happened (+:set+) or has been remedied (+:unset+).
+*TODO* wainting for callbacks
 
 === Configuration
 *Regentanz* can either be configured through a configure block or directly via
@@ -46,6 +43,11 @@ Direct configuration:
  
 See {Regentanz::Configuration}[https://github.com/carpodaster/regentanz/blob/master/lib/regentanz/configuration.rb]
 for a full list of configurable options.
+
+=== TODO
+* Implement OpenWeatherMap as new backend
+* Finalise callback hooks
+* Make tests pass on Ruby 1.9
 
 === Credits
 *Regentanz* is based upon and extracted from a standalone Ruby class made for

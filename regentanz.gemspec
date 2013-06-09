@@ -19,13 +19,12 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency 'actionmailer', '~> 3.0'
   s.add_dependency 'activesupport', '~> 3.0'
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'mocha'
   s.add_development_dependency 'bundler'
-  s.add_development_dependency 'redgreen'
-  s.add_development_dependency 'factory_girl'
+  s.add_development_dependency 'factory_girl', '~> 2.0'
+  s.add_development_dependency 'rdoc', '~> 2.4'
 
 end

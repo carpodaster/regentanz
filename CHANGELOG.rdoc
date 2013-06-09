@@ -1,5 +1,9 @@
 == CHANGELOG
 
+=== v0.3.3 // 2013-06-09
+* Remove ActionMailer dependency
+* Gem functionality is defunct as Google shut down their API
+
 === v0.1.4 // 2011-10-14
 * Fixed bug that caused forecast to have the current day only
 * present? now properly returns its true state (as opposed to always false)

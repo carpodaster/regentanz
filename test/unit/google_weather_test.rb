@@ -5,8 +5,6 @@ class GoogleWeatherTest < ActiveSupport::TestCase
   TEST_CACHE_FILE_NAME = File.join(Regentanz.configuration.cache_dir, "regentanz_test.xml")
 
   def setup
-    # FIXME Remove ActionMailer
-    ActionMailer::Base.deliveries.clear
     setup_regentanz_test_configuration!
   end
 
@@ -35,7 +33,7 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     assert_kind_of Regentanz.configuration.cache_backend, obj.cache
   end
 
-  test "should enter retry state and send email if invalid xml file has been found" do
+  test "should enter retry state if invalid xml file has been found" do
     stub_valid_xml_api_response!
     Regentanz::GoogleWeather.any_instance.expects(:api_failure_detected) # callback
 
@@ -43,10 +41,8 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     assert !weather.waiting_for_retry?
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
 
-    assert_difference "ActionMailer::Base.deliveries.size" do
-      weather.get_weather!
-      assert weather.waiting_for_retry?
-    end
+    weather.get_weather!
+    assert weather.waiting_for_retry?
   end
 
   test "should leave retry state remove invalid cache file when retry_ttl waittime is over" do
@@ -58,10 +54,8 @@ class GoogleWeatherTest < ActiveSupport::TestCase
     create_invalid_xml_response(TEST_CACHE_FILE_NAME)
     weather = Factory(:google_weather)
 
-    assert_difference "ActionMailer::Base.deliveries.size" do
-      weather.get_weather!
-      assert !weather.waiting_for_retry?
-    end
+    weather.get_weather!
+    assert !weather.waiting_for_retry?
   end
 
   test "should have lang option" do
